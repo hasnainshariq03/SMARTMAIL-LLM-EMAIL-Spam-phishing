@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SmartMail AI email spam and phishing analysis">
+  <title>SmartMail AI | Email Security</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="nav"><a class="brand" href="/">✉ SmartMail <span>AI</span></a><div class="navtag">LLM-POWERED EMAIL SECURITY</div></header>
+<main class="wrap">
+  <section class="hero"><div class="eyebrow">OPENAI API · CONTEXTUAL AI ANALYSIS</div><h1>Understand what’s<br><em>hiding in your inbox.</em></h1><p>Analyze email text for spam, phishing signals and suspicious requests. SmartMail explains its assessment and suggests a safe next step.</p></section>
+  <section class="layout">
+    <div class="panel">
+      <div class="panelhead"><div><h2>Analyze an email</h2><p>Paste the subject and message body below.</p></div><span class="tag">TEXT ONLY</span></div>
+      <form method="POST">
+        <label for="email_text">Email content</label>
+        <textarea id="email_text" name="email_text" maxlength="12000" placeholder="Subject: Verify your account&#10;&#10;Hello, ..." required>{{ email_text }}</textarea>
+        <div class="foot"><span>Do not paste passwords, private or confidential information.</span><span id="count">0 / 12,000</span></div>
+        <button type="submit">Analyze email <b>→</b></button>
+      </form>
+      {% if error %}<div class="error" role="alert">{{ error }}</div>{% endif %}
+      {% if result %}
+      <div class="result {{ result.classification|lower }}" aria-live="polite">
+        <div class="resulthead"><div><small>AI CLASSIFICATION</small><h3>{{ result.classification }}</h3></div><span class="risk">{{ result.risk_level }} RISK</span></div>
+        <p class="summary">{{ result.summary }}</p>
+        <div class="confidence"><span>Model confidence estimate</span><b>{{ (result.confidence * 100)|round(1) }}%</b></div>
+        <div class="bar"><i style="width:{{ (result.confidence * 100)|round(1) }}%"></i></div>
+        <h4>Why it was classified this way</h4><p>{{ result.reason }}</p>
+        <h4>Indicators</h4>
+        {% if result.indicators %}<ul>{% for item in result.indicators %}<li>{{ item }}</li>{% endfor %}</ul>{% else %}<p>No specific indicators were identified.</p>{% endif %}
+        <div class="action"><b>Recommended action</b><p>{{ result.recommended_action }}</p></div>
+        <small class="disclaimer">Confidence is a subjective model estimate, not a calibrated probability or guarantee.</small>
+      </div>
+      {% endif %}
+    </div>
+    <aside>
+      <div class="side"><div class="icon">✳</div><h3>How SmartMail works</h3>
+        <ol><li><b>Input</b><small>You paste email text</small></li><li><b>Secure request</b><small>Flask validates and sends text to the API</small></li><li><b>LLM analysis</b><small>OpenAI model assesses context and indicators</small></li><li><b>Structured result</b><small>Classification and explanation return as JSON</small></li></ol>
+      </div>
+      <div class="side mini"><h3>Detection categories</h3><p><span class="dot red"></span><b>Phishing</b><small>Credential theft, impersonation or deceptive requests</small></p><p><span class="dot amber"></span><b>Spam</b><small>Unsolicited or deceptive bulk messages</small></p><p><span class="dot green"></span><b>Legitimate</b><small>No clear spam or phishing evidence in the text</small></p></div>
+    </aside>
+  </section>
+  <div class="notice">ⓘ SmartMail analyzes text only. It does not verify sender identity, visit URLs, inspect attachments or guarantee that an email is safe.</div>
+</main>
+<footer><span>SmartMail · AI Email Security Demonstrator</span><span>Built by Hasnain Shariq</span></footer>
+<script>
+const t=document.getElementById('email_text'), c=document.getElementById('count');
+function update(){c.textContent=t.value.length.toLocaleString()+' / 12,000';}
+t.addEventListener('input',update); update();
+</script>
+</body></html>
